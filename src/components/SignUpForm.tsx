@@ -1,0 +1,135 @@
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/router";
+
+type FormData = {
+	email: string;
+	password: string;
+	confirmPassword: string;
+};
+
+export default function SignUpForm() {
+	const [formData, setFormData] = useState<FormData>({
+		email: "",
+		password: "",
+		confirmPassword: "",
+	});
+
+	const router = useRouter();
+
+	const [error, setError] = useState<string | "">("");
+	//show password state
+	const [showPassword, setShowPassword] = useState(false);
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		try {
+			e.preventDefault();
+			//remove the error message
+			setError("");
+
+			//check if email is valid using regex
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			if (!emailRegex.test(formData.email) || formData.email === "") {
+				setError("Please enter a valid email address.");
+				return;
+			}
+
+			//check to see if email is 8 character long
+			if (formData.password.length < 8) {
+				setError("Password must be at least 8 characters long.");
+				return;
+			}
+
+			//check if the password and confirm password match
+			if (formData.password !== formData.confirmPassword) {
+				setError("Passwords do not match.");
+				return;
+			}
+
+			//registering the user
+			const res = await axios.post("/api/signup", {
+				email: formData.email,
+				password: formData.password,
+			});
+			console.log(res.data);
+			//redirect to login page after successful registration
+			router.push("/login");
+		} catch (error) {
+			//check if the error is an AxiosError and has a response,
+			// then set the error message from the response, otherwise set a generic error message
+			if (axios.isAxiosError(error) && error.response) {
+				console.log("Hello");
+				setError(error.response.data.message);
+			} else setError(String(error));
+		}
+	};
+
+	return (
+		<form
+			onSubmit={handleSubmit}
+			className="flex flex-col w-full max-w-md p-6 md:p-8 lg:p-10  rounded-xl border-2 border-stroke space-y-5">
+			<h2 className="text-xl font-semibold text-headline text-center">
+				Create an Account
+			</h2>
+			{error && (
+				<span className="text-red-600 text-center text-sm font-bold">
+					*{error}
+				</span>
+			)}
+
+			<input
+				name="email"
+				type="email"
+				placeholder="Email"
+				value={formData.email}
+				onChange={handleChange}
+				required
+				className="h-10 lg:h-12 px-3 text-headline border-2 border-stroke rounded-md focus:outline-none focus:ring-2 focus:ring-button"
+			/>
+
+			<input
+				name="password"
+				type={showPassword ? "text" : "password"}
+				placeholder="Password"
+				value={formData.password}
+				onChange={handleChange}
+				required
+				className="h-10 lg:h-12 px-3 text-headline border-2 border-stroke rounded-md focus:outline-none focus:ring-2 focus:ring-button"
+			/>
+
+			<input
+				name="confirmPassword"
+				type={showPassword ? "text" : "password"}
+				placeholder="Confirm Password"
+				value={formData.confirmPassword}
+				onChange={handleChange}
+				required
+				className="h-10 lg:h-12 px-3 text-headline border-2 border-stroke rounded-md focus:outline-none focus:ring-2 focus:ring-button"
+			/>
+
+			{/* //show password checkbox */}
+			<div className="flex items-center">
+				<input
+					type="checkbox"
+					id="showPassword"
+					onChange={() => setShowPassword(!showPassword)}
+					className="h-4 w-4 text-button focus:ring-button border-stroke rounded"
+				/>
+				<label htmlFor="showPassword" className="ml-2 text-sm text-headline">
+					Show Passwords
+				</label>
+			</div>
+
+			<button
+				type="submit"
+				className="h-10 md:h-12 w-full bg-button text-buttonText text-sm md:text-md font-medium rounded-md hover:opacity-90 transition">
+				Sign Up
+			</button>
+		</form>
+	);
+}

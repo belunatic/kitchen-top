@@ -1,0 +1,164 @@
+/* TODO:
+X Automatically scroll into view when new recipe is generated 
+X Loading spinner to let user know recipe is being fetched
+X Add simple email/ password login system
+- Print/ DL recipes
+- Regenerate different recipe w same ingredients (add function to getFromAI.ts to ask for different recipe)
+- Share recipes (social media/ access native)
+- Automatically modify/regenerate same recipe when user adds more ingredients
+- Google login
+- Clear all ingredients/ start over
+- Remove ingredients from the list
+- Add notes to recipes
+- User account with ability to save recipe */
+- get new auth framework (appwrite, next/vercel, supabase)
+- figure out mvp and set timeline
+
+
+8/3 (fix date) Struggled with login/ auth. We kept trying to login but nothing would show up in userpage. AI gave us the run around. Ended the day with merge conflicts - main page was showing next.js boilerplate before we called it quits. 
+
+8/10 (fix date) M: Added logged in header and styles and fixed merge conflicts 
+
+8/12 Got a lot of stuff done: 
+-fb auth
+-userContext
+-added buttons for download, renew, like, and share. 
+decided to research how to add functionality to each.
+-got logged in header to work
+
+8/19 We decided to start with download/print. Spent 3 hours trying to get html2canvas working. it doesn't work. next step, html2pdf or something else altogether. supposedly a lot of people have problems with html2canvas. 
+
+2 / 16: SignUp and SingIn Using NextAuth and MongoDB
+** Connect MongoDB / Configuration of email/password credentials:
+-- using this link [ https://authjs.dev/getting-started/adapters/mongodb ] copy the code in "ADD THE MONGODB CLIENT" into --> pages/libs/db.ts
+
+-- copy the CONFIGURATION code to --> pages/libs/auth.ts
+-- -- check the code in pages/libs/auth.ts to see the configuration of connecting an email/password credential provider
+-- -- notice and pay attention to the export default, [ it a must you have this code ]
+
+-- Create a Page Router for NextAuth
+-- -- pages/api/auth/[...authnext].ts
+-- -- -- in this page is where you will connect the authOptions to the nextauth to function when someone is sign in and singout.
+
+-- How to sign in them in
+-- --   // Call the signIn function with the 'credentials' provider and user form data
+        const res = await signIn("credentials", {
+            email: formData.email,
+            password: formData.password,
+            redirect: true, // Set to true to redirect to a default or specified callbackUrl after sign-in
+            callbackUrl: "/", // Optional: URL to redirect to after success
+        });
+
+** Create a signUp route --> pages/api/signUp
+-- Create the logic to save a new user to a mongoDB
+
+** Typescript
+-- to customize what the Token types you will need to overwrite the default Typescript interface
+-- --  file at --> src/types/next.d.ts  is where you will need to update the types or replace the default types
+
+2/18
+-- To be able to use useSession first you'll need to expose the session context, <SessionProvider />, at the top level of your application 
+-- -- https://next-auth.js.org/getting-started/example
+-- Instances of useSession will then have access to the session data and status. 
+-- The <SessionProvider /> also takes care of keeping the session updated and synced between browser tabs and windows.
+
+2/20
+-- When using the Provider like Github, Google and so on and an ADAPTERS the data will be inserted auto, you just need to provide the structure of how to save it in the DB.
+-- in our example: return {
+					id: profile.id.toString(), // GitHub ID (string)
+					name: profile.name,
+					email: profile.email,
+					image: profile.avatar_url,
+					// Custom fields you want stored in MongoDB
+					username: profile.login,
+					githubId: profile.id,
+				};
+
+-- In JWT callback the id that is being set is the ID from the DB (MongoDB) and not from the profile object from PRovider.
+
+2/13
+-- Managing Github SigIn to different account after logging out, Add the options below to the Github Provide
+-- --       clientId: process.env.GITHUB_ID!,
+			clientSecret: process.env.GITHUB_SECRET!,
+			authorization: {
+				params: {
+					prompt: "select_account", // Forces the account picker
+				},
+			},
+
+2/28
+-- Adding customer USER Property, you need to update the `type/next-auth.d.ts` file with:
+-- -- 	...
+		// add custom data to the JWT token
+		interface User {
+			githubId?: string; // GitHub ID (string)
+			googleId?: string; // Google ID (string)
+		}
+		...
+
+-- MONGODB ACCOUNT COLLECTION
+-- MongoDb creates a Account Documents to keep track of all OAuth account and there origination.
+-- -- Detail info from web:
+-- -- -- This collection links a user's profile in the users collection to specific authentication providers (e.g., Google, GitHub). It stores provider-specific details like provider details, access_token, and user_id (which maps to the _id in the users collection). This design is crucial for:
+
+    Security: It helps prevent account hijacking by not automatically linking accounts between arbitrary providers unless an email address has been securely verified.
+    Multiple Sign-in Methods: It allows a single user to link multiple authentication methods (e.g., both a Google account and a GitHub account) to the same primary user profile.
+
+04/02 
+- FETCH USER RECIPE 
+-- 	Nextjs uses ` api/get_user_saved_recipe/[user_id] ` instead of ` api/get_user_saved_recipe/:user_id
+-- 	OBJECTID
+	-- 	To convert a object to be used as ObjectId
+		1. import Object from mongoDB
+		2 in the mongo db functionality use this `....findOne(_id : new ObjectId(the_id_in_the_query.toString()) making sure the id_variable is converted to string)
+
+
+04/03 
+- NEXT SERVER ROUTE
+-- an api like that is saved in server side `api/delete_saved_recipe/[recipe_id].ts` will always call the ` export default function `
+-- That is a to go to function, you can have helpers but only the `expoert default function` will be called
+
+- AXIOS DELETE
+-- when you call axios.delete and in the body you used:
+	-- "params" this will result to extracting it using req.query
+	-- "body" this will result in extracting it using req.body
+
+04/21
+- TWO ENVIRONMENTS
+-- Nextjs when run a project it run it in two environments: the SERVER and CLIENT side
+-- Our HTML2PDF file can only used in the client side and will cause a REFERENCE ERROR if run on the server side
+	-- In order to prevent this from happening with use what is called DYNAMIC IMPORTING
+	-- See `src/utils/helperFunctions/export2Pdf.ts` to see it in action.
+	-- It is a way to import a module on the client side or only when the user interact with it.
+
+04/22
+- DECLARING TYPES	
+-- Typescript allows you to declare module for you type.
+-- it extension will end with ***.d.ts
+-- Like any other module, you will be able to export it and this will automatically make it global available BUT one more step is needed.
+-- Last thing to do is include your new declare Typescript module to load you declaration in the `tsconfig.json file
+-- -- in the include object add the route to your declarations `"src/types/**/*.d.ts"`
+-- -- if you are to export a specific style by itself as in out position here, we will need to import it to whatever file we use.
+
+05/11
+RESET PASSWORD FLOW (JWT + Nodemailer) [ Summarized by AI Copilot]
+1. User submits email → /api/auth/request-reset
+	-- Generate a JWT reset token
+
+	-- Save it to the user record
+
+	-- Email the user a reset link
+
+2. User clicks link → /reset-password?token=XYZ
+	-- Frontend calls /api/auth/verify-reset
+
+	-- If valid → show “New Password” form
+
+3. User submits new password → /api/auth/reset-password
+	-- Verify JWT
+
+	-- Hash password
+
+	-- Update DB
+
+	-- Invalidate token
