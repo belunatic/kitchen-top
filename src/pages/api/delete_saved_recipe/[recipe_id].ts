@@ -1,7 +1,11 @@
 import client from "../../libs/db";
 import { ObjectId } from "mongodb";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function deleteUserSavedRecipe(req, res) {
+export default async function deleteUserSavedRecipe(
+	req: NextApiRequest,
+	res: NextApiResponse,
+) {
 	if (req.method !== "DELETE") {
 		return res.status(405).end();
 	}
@@ -20,7 +24,7 @@ export default async function deleteUserSavedRecipe(req, res) {
 		//checking if the recipe exists and belongs to the user making the request using recipe_id and user_id
 		const existRecipe = await db
 			.collection("recipes")
-			.findOne({ _id: new ObjectId(recipe_id.toString()), user_id });
+			.findOne({ _id: new ObjectId(recipe_id?.toString()), user_id });
 
 		if (!existRecipe) {
 			return res
@@ -31,7 +35,7 @@ export default async function deleteUserSavedRecipe(req, res) {
 		//delete the recipe from the DB
 		await db
 			.collection("recipes")
-			.deleteOne({ _id: new ObjectId(recipe_id.toString()) });
+			.deleteOne({ _id: new ObjectId(recipe_id?.toString()) });
 
 		console.log(existRecipe.title);
 

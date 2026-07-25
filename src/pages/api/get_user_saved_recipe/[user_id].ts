@@ -1,7 +1,11 @@
 import client from "../../libs/db";
 import { ObjectId } from "mongodb";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function getUserSavedRecipe(req, res) {
+export default async function getUserSavedRecipe(
+	req: NextApiRequest,
+	res: NextApiResponse,
+) {
 	if (req.method !== "GET") {
 		return res.status(405).end();
 	}
@@ -20,7 +24,7 @@ export default async function getUserSavedRecipe(req, res) {
 		//using user_id to check if the user already exists in the DB
 		const existUser = await db
 			.collection("users")
-			.findOne({ _id: new ObjectId(user_id.toString()) });
+			.findOne({ _id: new ObjectId(user_id?.toString()) });
 		if (!existUser) {
 			return res.status(422).json({ message: "User not found" });
 		}

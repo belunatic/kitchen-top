@@ -1,7 +1,11 @@
 import client from "../../libs/db";
 import { ObjectId } from "mongodb";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function displaySavedRecipe(req, res) {
+export default async function displaySavedRecipe(
+	req: NextApiRequest,
+	res: NextApiResponse,
+) {
 	if (req.method !== "GET") {
 		return res.status(405).end();
 	}
@@ -20,7 +24,7 @@ export default async function displaySavedRecipe(req, res) {
 		//checking if the recipe exists and belongs to the user making the request using recipe_id and user_id
 		const recipe = await db
 			.collection("recipes")
-			.findOne({ _id: new ObjectId(recipe_id.toString()) });
+			.findOne({ _id: new ObjectId(recipe_id?.toString()) });
 
 		if (!recipe) {
 			return res
