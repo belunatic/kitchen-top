@@ -1,6 +1,10 @@
 import client from "../libs/db";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function saveRecipe(req, res) {
+export default async function saveRecipe(
+	req: NextApiRequest,
+	res: NextApiResponse,
+) {
 	if (req.method !== "POST") {
 		return res.status(405).end();
 	}
