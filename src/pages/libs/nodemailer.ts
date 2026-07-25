@@ -1,13 +1,11 @@
-import nodemailer from "nodemailer";
+// nodemailer configuration was intentionally moved to a server-only module
+// at src/pages/api/nodemailer.ts to avoid bundling Node-only modules into the client.
+// If client code imports this file by mistake, throw an explicit error at runtime.
 
-// reusable nodemailer setup
-export const transporter = nodemailer.createTransport({
-	// host: process.env.SMTP_HOST,
-	// port: Number(process.env.SMTP_PORT),
-	// secure: true,
-	service: "gmail",
-	auth: {
-		user: process.env.SMTP_USER,
-		pass: process.env.SMTP_PASS,
+export const transporter = {
+	sendMail: () => {
+		throw new Error(
+			"Server-only transporter moved to src/pages/api/nodemailer. Use the server API route to send emails."
+		);
 	},
-});
+};

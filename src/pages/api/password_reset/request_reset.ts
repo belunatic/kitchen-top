@@ -1,6 +1,6 @@
 import client from "../../libs/db";
 import * as jwt from "jsonwebtoken";
-import { transporter } from "../../libs/nodemailer";
+import { transporter } from "../nodemailer";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function RequestReset(
