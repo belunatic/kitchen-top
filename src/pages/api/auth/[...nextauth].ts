@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import { authOptions } from "@/pages/libs/auth";
+import { authOptions } from "@/lib/auth";
 
 //export he default
 
