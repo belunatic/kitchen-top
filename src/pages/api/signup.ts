@@ -1,5 +1,5 @@
 // pages/api/signup.js
-import client from "../libs/db";
+import client from "../../lib/db";
 import bcrypt from "bcrypt";
 import type { NextApiRequest, NextApiResponse } from "next";
 

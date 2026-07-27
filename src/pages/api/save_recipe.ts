@@ -1,4 +1,4 @@
-import client from "../libs/db";
+import client from "../../lib/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function saveRecipe(

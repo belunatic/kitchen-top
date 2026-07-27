@@ -1,4 +1,4 @@
-import client from "../../libs/db";
+import client from "../../../lib/db";
 import { ObjectId } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 

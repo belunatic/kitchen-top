@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import client from "../../libs/db";
+import client from "../../../lib/db";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 

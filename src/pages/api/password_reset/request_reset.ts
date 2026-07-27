@@ -1,4 +1,4 @@
-import client from "../../libs/db";
+import client from "../../../lib/db";
 import * as jwt from "jsonwebtoken";
 import { transporter } from "../nodemailer";
 import type { NextApiRequest, NextApiResponse } from "next";
