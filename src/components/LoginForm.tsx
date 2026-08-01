@@ -68,13 +68,13 @@ export default function LoginForm() {
 
 			<button
 				type="button"
-				onClick={() => signIn("github", { callbackUrl: "/" })}
+				onClick={() => signIn("github", { callbackUrl: "/", redirect: true })}
 				className="h-10 md:h-12 w-full bg-button text-buttonText text-sm md:text-md font-medium rounded-md hover:opacity-90 transition">
 				Github SignIn
 			</button>
 			<button
 				type="button"
-				onClick={() => signIn("google", { callbackUrl: "/" })}
+				onClick={() => signIn("google", { callbackUrl: "/", redirect: true })}
 				className="h-10 md:h-12 w-full bg-button text-buttonText text-sm md:text-md font-medium rounded-md hover:opacity-90 transition">
 				Google SignIn
 			</button>
